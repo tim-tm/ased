@@ -5,7 +5,7 @@ LIBS=
 PLATFORM = $(shell ./platform.sh)
 
 ifeq ($(PLATFORM),Pi)
-	CFLAGS += -DPLATFORM_RPI
+	CFLAGS += -DPLATFORM_RPI -DDATABASE_REDIS
 	LIBS += -lwiringPi
 endif
 
@@ -30,7 +30,7 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 always:
 	mkdir -p $(BUILDDIR)
 	mkdir -p $(BUILDDIR)/platform
-	mkdir -p $(BUILDDIR)/network
+	mkdir -p $(BUILDDIR)/database
 
 clean:
 	rm -rf $(BUILDDIR)/*

@@ -1,5 +1,5 @@
-#ifndef _PLATFORM_H_
-#define _PLATFORM_H_
+#ifndef PLATFORM_H
+#define PLATFORM_H
 
 #define MPU6050_DEVICE_ADDRESS 0x68
 #define MPU6050_PWR_MGMT_1     0x6B
@@ -22,4 +22,4 @@ short platform_mpu6050_read_data_x(platform_state *state);
 short platform_mpu6050_read_data_y(platform_state *state);
 short platform_mpu6050_read_data_z(platform_state *state);
 
-#endif // _PLATFORM_H_
+#endif // PLATFORM_H
