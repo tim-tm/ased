@@ -6,7 +6,7 @@ PLATFORM = $(shell ./platform.sh)
 
 ifeq ($(PLATFORM),Pi)
 	CFLAGS += -DPLATFORM_RPI -DDATABASE_REDIS
-	LIBS += -lwiringPi
+	LIBS += -lwiringPi -lhiredis
 endif
 
 SRCDIR=src

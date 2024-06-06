@@ -5,6 +5,7 @@
 #include <time.h>
 
 #include "platform/platform.h"
+#include "database/database.h"
 
 float max_gx = 0;
 float max_gy = 0;

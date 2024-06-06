@@ -5,8 +5,12 @@
 
 typedef struct _database_state_ {
     void *context;
+    void *ssl;
 } database_state;
 
+/**
+ * FIXME: database_init hat SSL bekommen, testen!
+*/
 database_state *database_init(const char *ip, const char *password, int port);
 void database_free(database_state *state);
 
