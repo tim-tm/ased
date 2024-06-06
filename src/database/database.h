@@ -8,10 +8,9 @@ typedef struct _database_state_ {
     void *ssl;
 } database_state;
 
-/**
- * FIXME: database_init hat SSL bekommen, testen!
-*/
-database_state *database_init(const char *ip, const char *password, int port);
+database_state *database_init_ssl(const char *hostname, const char *password, int port);
+database_state *database_init(const char *hostname, const char *password, int port);
+database_state *database_init_no_pw(const char *hostname, int port);
 void database_free(database_state *state);
 
 bool database_set(database_state *state, const char *key, const char *value);

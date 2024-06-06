@@ -6,15 +6,15 @@
 #include <hiredis/hiredis.h>
 #include <hiredis/hiredis_ssl.h>
 
-database_state *database_init(const char *ip, const char *password, int port) {
-    if (ip == NULL || password == NULL) return NULL;
+database_state *database_init_ssl(const char *hostname, const char *password, int port) {
+    if (hostname == NULL || password == NULL) return NULL;
 
     database_state *state = malloc(sizeof(database_state));
     if (state == NULL) return NULL;
 
     redisSSLContextError err;
     redisInitOpenSSL();
-    redisSSLContext *ssl_context = redisCreateSSLContext("", "", "", "", "", &err);
+    redisSSLContext *ssl_context = redisCreateSSLContext(NULL, NULL, NULL, NULL, NULL, &err);
     if (ssl_context == NULL || err != REDIS_SSL_CTX_NONE) {
         printf("Failed to create SSLContext!\n");
         free(state);
@@ -22,7 +22,7 @@ database_state *database_init(const char *ip, const char *password, int port) {
     }
 
     redisOptions opts = {0};
-    REDIS_OPTIONS_SET_TCP(&opts, ip, port);
+    REDIS_OPTIONS_SET_TCP(&opts, hostname, port);
 
     redisContext *context = redisConnectWithOptions(&opts);
     if (context == NULL || context->err) {
@@ -53,6 +53,60 @@ database_state *database_init(const char *ip, const char *password, int port) {
 
     state->context = context;
     state->ssl = ssl_context;
+    return state;
+}
+
+database_state *database_init(const char *hostname, const char *password, int port) {
+    if (hostname == NULL || password == NULL) return NULL;
+
+    database_state *state = malloc(sizeof(database_state));
+    if (state == NULL) return NULL;
+
+    redisContext *context = redisConnect(hostname, port);
+    if (context == NULL || context->err) {
+        if (context) {
+            printf("Connection error: %s\n", context->errstr);
+            redisFree(context);
+        } else {
+            printf("Connection error: can't allocate redis context\n");
+        }
+        free(state);
+        return NULL;
+    }
+
+    redisReply *reply = redisCommand(context, "AUTH %s", password);
+    if (strcmp(reply->str, "OK") != 0) {
+        freeReplyObject(reply);
+        free(state);
+        return NULL;
+    }
+    freeReplyObject(reply);
+
+    state->context = context;
+    state->ssl = NULL;
+    return state;
+}
+
+database_state *database_init_no_pw(const char *hostname, int port) {
+    if (hostname == NULL) return NULL;
+
+    database_state *state = malloc(sizeof(database_state));
+    if (state == NULL) return NULL;
+
+    redisContext *context = redisConnect(hostname, port);
+    if (context == NULL || context->err) {
+        if (context) {
+            printf("Connection error: %s\n", context->errstr);
+            redisFree(context);
+        } else {
+            printf("Connection error: can't allocate redis context\n");
+        }
+        free(state);
+        return NULL;
+    }
+
+    state->context = context;
+    state->ssl = NULL;
     return state;
 }
 

@@ -1,5 +1,3 @@
-#ifdef PLATFORM_RPI
-
 #include "platform.h"
 
 #include <stdlib.h>
@@ -53,5 +51,3 @@ short platform_mpu6050_read_data_z(platform_state *state) {
 	data /= 131;
 	return data;
 }
-
-#endif
