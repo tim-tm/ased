@@ -12,17 +12,19 @@ database_state *database_init_ssl(const char *hostname, const char *password, in
     database_state *state = malloc(sizeof(database_state));
     if (state == NULL) return NULL;
 
-    redisSSLContextError err;
+    redisSSLContextError ssl_error = REDIS_SSL_CTX_NONE;
     redisInitOpenSSL();
-    redisSSLContext *ssl_context = redisCreateSSLContext(NULL, NULL, NULL, NULL, NULL, &err);
-    if (ssl_context == NULL || err != REDIS_SSL_CTX_NONE) {
-        printf("Failed to create SSLContext!\n");
+    redisSSLContext *ssl_context = redisCreateSSLContext(NULL, NULL, NULL, NULL, NULL, &ssl_error);
+    if (!ssl_context || ssl_error != REDIS_SSL_CTX_NONE) {
+        printf("Failed to create SSLContext: %s\n", redisSSLContextGetError(ssl_error));
         free(state);
         return NULL;
     }
 
+    struct timeval tv = { 1, 500000 };
     redisOptions opts = {0};
     REDIS_OPTIONS_SET_TCP(&opts, hostname, port);
+    opts.connect_timeout = &tv;
 
     redisContext *context = redisConnectWithOptions(&opts);
     if (context == NULL || context->err) {
@@ -114,6 +116,9 @@ void database_free(database_state *state) {
     if (state) {
         if (state->context) {
             redisFree(state->context);
+        }
+        if (state->ssl) {
+            redisFreeSSLContext(state->ssl);
         }
         free(state);
     }
