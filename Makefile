@@ -16,12 +16,12 @@ TEST=$(wildcard $(TESTDIR)/*.c)
 TESTOSRC=
 
 ifeq ($(PLATFORM),Pi)
-	CFLAGS += -DPLATFORM_RPI -DDATABASE_REDIS -Ibuild
-	LIBS += -lwiringPi -Lbuild/hiredis -l:libhiredis.a -l:libhiredis_ssl.a -lssl -lcrypto
-	SRC += $(SRCDIR)/database/database_redis.c
+	CFLAGS += -DPLATFORM_RPI -DDATABASE_SQLITE -Ibuild
+	LIBS += -lwiringPi -lsqlite3
+	SRC += $(SRCDIR)/database/database_sqlite.c
 	SRC += $(SRCDIR)/platform/platform_rpi.c
 	TEST += $(TESTDIR)/test_platform_rpi.c
-	TESTOSRC += $(SRCDIR)/database/database_redis.c
+	TESTOSRC += $(SRCDIR)/database/database_sqlite.c
 	TESTOSRC += $(SRCDIR)/platform/platform_rpi.c
 else
 	CFLAGS += -DPLATFORM_GENERIC -DDATABASE_REDIS -Ibuild

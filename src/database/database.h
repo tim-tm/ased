@@ -17,4 +17,6 @@ bool database_set(database_state *state, const char *key, const char *value);
 char *database_get(database_state *state, const char *key);
 bool database_append(database_state *state, const char *key, const char *value);
 
+bool database_query(database_state *state, const char *query);
+
 #endif // !DATABASE_H
